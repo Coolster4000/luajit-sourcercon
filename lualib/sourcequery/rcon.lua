@@ -1,7 +1,8 @@
 local struct = require 'sourcequery.struct'
 local buffer = require 'sourcequery.buffer'
 local packet = require 'sourcequery.packet'
-local tcp = ngx.socket.tcp
+local socket = require("socket")
+local tcp = assert(socket:tcp())
 local tonumber = tonumber
 local setmetatable = setmetatable
 local char = string.char
@@ -16,7 +17,7 @@ local _M = new_tab(0, 32)
 local mt = { __index = _M }
 
 function _M.new(self)
-    local sock, err = tcp()
+    local sock, err = tcp
     if not sock then
         return nil, err
     end

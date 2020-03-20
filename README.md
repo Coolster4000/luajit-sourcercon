@@ -1,39 +1,10 @@
-# Resty Source-engine Query
+# RCON implementation in Lua by github.com/xiaooloong
 
-is a Library to query Source-Engine game servers for [OpenResty][1].
+This library was written by github.com/xiaooloong to query/rcon source servers in nginx/openresty. I've made a small change to instead rely on luasocket and luajit. These changes are so small, the only reason I even forked this was to easily clone on another machine. I didn't implement any changes for the sourcequery aspect of this library because I don't use it since I don't have dependencies. If you need it, you should be able to figure it out. Ignore the lualib folder, that's a holdover from the openresty library and I don't know enough about git to remove it. Just place the `sourcequery` folder with your script.
 
-Inspired by [xPaw/PHP-Source-Query][2].
+Usage:
 
-For Source Query:
-```lua
-local q = require 'sourcequery'
-local j = require 'cjson'
---[[
-    local s = q:new(
-        host,       --ip address, required
-        port,       --udp port, default value is 27015
-        timeout,    --timeout, default value is 1000(ms)
-        engine      --engine type, default is 'source',
-                      otherwise will use Goldsource proto.
-                      https://developer.valvesoftware.com/wiki/Server_queries#Goldsource_Server
-    )
-]]--
-local server = q:new('207.173.67.34')
---[[
-    local s = q:new('70.42.74.170', 27016)
-    local s = q:new('216.131.79.171', 27015, 3000)
-    local s = q:new('217.106.106.117', 27015, 1000, 'goldsource')
-]]--
-ngx.say(j.encode({server:ping()}))
---ngx.say(j.encode({server:getinfo()}))
---ngx.say(j.encode({server:getplayers()}))
---ngx.say(j.encode({server:getrules()}))
---[[
-[true,0.26699995994568]
-]]--
-```
-
-For Source RCON
+foo.lua
 ```lua
 local rcon = require 'sourcequery.rcon'
 local r = rcon:new()
@@ -47,25 +18,15 @@ local r = rcon:new()
 ]]--
 local ok, err = r:connect('qT8VzUwm8', '127.0.0.1', 27016)
 --[[
-    local ok, err = r:connetc('pass', '127.0.0.1')
+    local ok, err = r:connect('pass', '127.0.0.1')
     local ok, err = r:connect('pass', '127.0.0.1', 27016, 3000)
 ]]--
 if not ok then
-    return ngx.say(err)
+    return print(err)
 end
 
 ok, err = r:exec('status')
 r:close()
-ngx.say(ok, err)
+print(ok, err)
 ```
-
-[OpenResty][1] 的起源引擎游戏服务器信息查询工具
-
-受 [xPaw/PHP-Source-Query][2] 启发移植
-
-### 已经实现的功能：
-  * 查询方法（ping, getinfo, getrules, getplayers）
-  * RCON
-
-  [1]: http://openresty.org/
-  [2]: https://github.com/xPaw/PHP-Source-Query
+to run: `luajit foo.lua`
